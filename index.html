@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Github Repositories listing page</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <style>
+    body {
+      padding: 20px;
+    }
+    .repo-list {
+      list-style: none;
+      padding: 0;
+    }
+    .repo-item {
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Github Repositories Listing Page</h1>
+    
+    <div class="form-group">
+      <label for="username">GitHub Username:</label>
+      <input type="text" class="form-control" id="username" placeholder="Enter GitHub username">
+    </div>
+    
+    <button class="btn btn-primary" onclick="fetchRepositories()">Fetch Repositories</button>
+    
+    <ul class="repo-list mt-4" id="repoList"></ul>
+  </div>
+
+  <!-- jQuery and Bootstrap JS -->
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  
+  <script>
+    function fetchRepositories() {
+      const username = document.getElementById('username').value;
+
+      // Check if the username is provided
+      if (!username) {
+        alert('Please enter a GitHub username.');
+        return;
+      }
+
+      // Fetch repositories using GitHub API
+      fetch(`https://api.github.com/users/${username}/repos`)
+        .then(response => response.json())
+        .then(repositories => {
+          displayRepositories(repositories);
+        })
+        .catch(error => {
+          console.error('Error fetching repositories:', error);
+          alert('Error fetching repositories. Please try again.');
+        });
+    }
+
+    function displayRepositories(repositories) {
+      const repoListElement = document.getElementById('repoList');
+      repoListElement.innerHTML = ''; // Clear previous results
+
+      if (repositories.length === 0) {
+        repoListElement.innerHTML = '<p>No repositories found for this user.</p>';
+        return;
+      }
+
+      repositories.forEach(repo => {
+        const repoItemElement = document.createElement('li');
+        repoItemElement.className = 'repo-item';
+
+        const repoLinkElement = document.createElement('a');
+        repoLinkElement.href = repo.html_url;
+        repoLinkElement.target = '_blank';
+        repoLinkElement.textContent = repo.name;
+
+        repoItemElement.appendChild(repoLinkElement);
+        repoListElement.appendChild(repoItemElement);
+      });
+    }
+  </script>
+</body>
+</html>
